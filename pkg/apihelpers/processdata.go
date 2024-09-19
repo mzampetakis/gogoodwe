@@ -37,22 +37,22 @@ import (
 //
 // Returns:
 // - error: An error if any of the processing steps fail, otherwise nil.
-func ProcesData(inverterData interface{}) error {
+func ProcesData(inverterData interface{}) (string, error) {
 
 	// Get data JSON
 	dataOutput, err := utils.MarshalStructToJSON(inverterData)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Parse output
-	output, err := utils.ParseOutput(dataOutput)
-	if err != nil {
-		return err
-	}
+	//output, err := utils.ParseOutput(dataOutput)
+	//if err != nil {
+	//	return "", err
+	//}
 
 	// Print output
-	utils.PrintOutput(output)
+	//utils.PrintOutput(output)
 
-	return nil
+	return string(dataOutput), nil
 }

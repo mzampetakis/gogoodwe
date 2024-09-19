@@ -56,11 +56,11 @@ func (inverterData *InverterAllPoint) GetMonitorData(authLoginInfo *auth.LoginIn
 //
 // Returns:
 // - error: an error if there was a problem retrieving the power data.
-func (inverterData *InverterAllPoint) GetPowerData(authLoginInfo *auth.LoginInfo) error {
+func (inverterData *InverterAllPoint) GetPowerData(authLoginInfo *auth.LoginInfo) (string, error) {
 
 	// Get monitor data
 	if err := inverterData.GetMonitorData(authLoginInfo, inverterData); err != nil {
-		return err
+		return "", err
 	}
 
 	return apihelpers.ProcesData(inverterData)

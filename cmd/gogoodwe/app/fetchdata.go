@@ -39,7 +39,7 @@ import (
 // PowerStationID: the ID of the power station.
 // DailySummary: a boolean indicating whether to retrieve a daily summary.
 // error: an error if there was a problem logging in or fetching data.
-func fetchData(context context.Context, Account, Password, PowerStationID string, ReportType int) error {
+func fetchData(context context.Context, Account, Password, PowerStationID string, ReportType int) (string, error) {
 
 	// User account struct
 	apiLoginCreds := auth.NewSemsLoginCredentials(Account, Password, PowerStationID)
@@ -50,7 +50,7 @@ func fetchData(context context.Context, Account, Password, PowerStationID string
 	// Do the login
 	loginApiResponse, err := loginService.SemsLogin()
 	if err != nil {
-		return fmt.Errorf("login failed: %w", err)
+		return "", fmt.Errorf("login failed: %w", err)
 	}
 
 	//Populate the loginInfo struct
@@ -62,15 +62,16 @@ func fetchData(context context.Context, Account, Password, PowerStationID string
 	// fetch the data
 	var dataService interfaces.PowerData = lookupMonitorData(ReportType)
 
-	if err := dataService.GetPowerData(loginInfo); err != nil {
-		return fmt.Errorf("data retrieval failed: %w", err)
+	res, err := dataService.GetPowerData(loginInfo)
+	if err != nil {
+		return "", fmt.Errorf("data retrieval failed: %w", err)
 	}
 
 	if err := context.Err(); err != nil {
-		return fmt.Errorf("context error: %w", err)
+		return "", fmt.Errorf("context error: %w", err)
 	}
 
 	defer context.Done()
-	return nil
+	return res, nil
 
 }

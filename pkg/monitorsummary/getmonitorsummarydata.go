@@ -55,11 +55,11 @@ func (summaryData *DailySummaryData) GetMonitorData(authLoginInfo *auth.LoginInf
 //
 // Returns:
 // - error: an error if there was a problem retrieving the power data.
-func (summaryData *DailySummaryData) GetPowerData(authLoginInfo *auth.LoginInfo) error {
+func (summaryData *DailySummaryData) GetPowerData(authLoginInfo *auth.LoginInfo) (string, error) {
 
 	// Get monitor data
 	if err := summaryData.GetMonitorData(authLoginInfo, summaryData); err != nil {
-		return err
+		return "", err
 	}
 
 	return apihelpers.ProcesData(summaryData)

@@ -114,7 +114,7 @@ type MonitorData struct {
 				Istr16                float64 `json:"istr16"`
 			} `json:"d"`
 			ItChangeFlag bool    `json:"it_change_flag"`
-			Tempperature float64 `json:"tempperature"`
+			Temperature  float64 `json:"tempperature"`
 			CheckCode    string  `json:"check_code"`
 			Next         any     `json:"next"`
 			Prev         any     `json:"prev"`
@@ -331,8 +331,27 @@ type MonitorData struct {
 			DescriptionText any  `json:"descriptionText"`
 			Sns             any  `json:"sns"`
 		} `json:"smuggleInfo"`
-		HasPowerflow              bool `json:"hasPowerflow"`
-		Powerflow                 any  `json:"powerflow"`
+		HasPowerflow bool `json:"hasPowerflow"`
+		Powerflow    struct {
+			Battery                   string `json:"bettery"`
+			BatteryStatus             int    `json:"betteryStatus"`
+			BatteryStatusStr          any    `json:"betteryStatusStr"`
+			Genset                    string `json:"genset"`
+			GensetStatus              int    `json:"gensetStatus"`
+			Grid                      string `json:"grid"`
+			GridGensetStatus          int    `json:"gridGensetStatus"`
+			GridStatus                int    `json:"gridStatus"`
+			HasEquipment              bool   `json:"hasEquipment"`
+			IsBpuAndInverterNoBattery bool   `json:"isBpuAndInverterNoBattery"`
+			IsHomKit                  bool   `json:"isHomKit"`
+			IsMoreBettery             bool   `json:"isMoreBettery"`
+			Load                      string `json:"load"`
+			LoadStatus                int    `json:"loadStatus"`
+			Pv                        string `json:"pv"`
+			PvStatus                  int    `json:"pvStatus"`
+			Soc                       int    `json:"soc"`
+			SocText                   string `json:"socText"`
+		} `json:"powerflow"`
 		HasGridLoad               bool `json:"hasGridLoad"`
 		IsParallelInventers       bool `json:"isParallelInventers"`
 		IsEvCharge                bool `json:"isEvCharge"`

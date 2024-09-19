@@ -26,7 +26,6 @@ package utils
 import (
 	"fmt"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/valyala/fastjson"
 )
 
@@ -48,5 +47,5 @@ func ParseOutput(dataOutput []byte) (*fastjson.Value, error) {
 //
 // Return type: None.
 func PrintOutput(output *fastjson.Value) {
-	fmt.Println(aurora.BrightYellow(output))
+	fmt.Println(output)
 }

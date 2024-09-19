@@ -25,10 +25,27 @@ package app
 
 import (
 	"context"
-
+	"encoding/json"
+	"fmt"
 	"github.com/AaronSaikovski/gogoodwe/cmd/gogoodwe/utils"
+	"github.com/AaronSaikovski/gogoodwe/pkg/monitordetail"
 	"github.com/alexflint/go-arg"
+	"strconv"
+	"strings"
 )
+
+type ResponseData struct {
+	InverterTemperature float64 `json:"inverter_temperature"`
+	PvOutput            float64 `json:"pv_output"`
+	HouseLoad           float64 `json:"house_load"`
+	BatteryPercentage   int     `json:"battery_percentage"`
+	BatteryInput        float64 `json:"battery_input"`
+	BatteryOutput       float64 `json:"battery_output"`
+	BatteryState        string  `json:"battery_state"`
+	GridInput           float64 `json:"grid_input"`
+	GridOutput          float64 `json:"grid_output"`
+	GridDirection       string  `json:"grid_direction"`
+}
 
 // Run is the main program runner.
 //
@@ -67,11 +84,61 @@ func Run(ctx context.Context, versionString string) error {
 		return ctx.Err()
 	}
 
-	// Get the data from the API, return any errors
-	if err := fetchData(ctx, args.Account, args.Password, args.PowerStationID, args.ReportType); err != nil {
+	data, err := fetchData(ctx, args.Account, args.Password, args.PowerStationID, args.ReportType)
+	if err != nil {
 		return ctx.Err()
 	} else {
 		ctx.Done()
+		monitorData := monitordetail.MonitorData{}
+		err = json.Unmarshal([]byte(data), &monitorData)
+		if err != nil {
+			return err
+		}
+		responseData := ResponseData{}
+
+		if len(monitorData.Data.Inverter) > 0 {
+			responseData.InverterTemperature = monitorData.Data.Inverter[0].Temperature
+		}
+		responseData.PvOutput = monitorData.Data.Kpi.Pac
+		if len(monitorData.Data.Powerflow.Load) > 3 {
+			batteryLoadText, _ := strings.CutSuffix(monitorData.Data.Powerflow.Load, "(W)")
+			batteryLoadFloat, err := strconv.ParseFloat(batteryLoadText, 64)
+			if nil == err {
+				responseData.HouseLoad = batteryLoadFloat
+			}
+		}
+		responseData.BatteryPercentage = monitorData.Data.Powerflow.Soc
+
+		batteryText, _ := strings.CutSuffix(monitorData.Data.Powerflow.Battery, "(W)")
+		batteryFloat, err := strconv.ParseFloat(batteryText, 64)
+		if monitorData.Data.Powerflow.BatteryStatus == 1 {
+			responseData.BatteryState = "charging"
+			if nil == err {
+				responseData.BatteryInput = batteryFloat
+			}
+		} else {
+			responseData.BatteryState = "discharging"
+			if nil == err {
+				responseData.BatteryOutput = batteryFloat
+			}
+		}
+
+		gridLoadText, _ := strings.CutSuffix(monitorData.Data.Powerflow.Grid, "(W)")
+		gridLoadFloat, err := strconv.ParseFloat(gridLoadText, 64)
+		if monitorData.Data.Powerflow.LoadStatus == 1 {
+			responseData.GridDirection = "incoming"
+			if nil == err {
+				responseData.GridInput = gridLoadFloat
+			}
+		} else {
+			responseData.GridDirection = "outgoing"
+			if nil == err {
+				responseData.GridOutput = gridLoadFloat
+			}
+		}
+
+		result, _ := json.Marshal(&responseData)
+		fmt.Print(string(result))
 		return nil
 	}
 

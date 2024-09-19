@@ -56,11 +56,11 @@ func (plantDetailData *PlantDetailByPowerstationId) GetMonitorData(authLoginInfo
 //
 // Returns:
 // - error: an error if there was a problem retrieving the power data.
-func (plantDetailData *PlantDetailByPowerstationId) GetPowerData(authLoginInfo *auth.LoginInfo) error {
+func (plantDetailData *PlantDetailByPowerstationId) GetPowerData(authLoginInfo *auth.LoginInfo) (string, error) {
 
 	// Get monitor data
 	if err := plantDetailData.GetMonitorData(authLoginInfo, plantDetailData); err != nil {
-		return err
+		return "", err
 	}
 
 	return apihelpers.ProcesData(plantDetailData)

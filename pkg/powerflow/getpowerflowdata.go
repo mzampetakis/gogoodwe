@@ -56,11 +56,11 @@ func (powerFlowData *Powerflow) GetMonitorData(authLoginInfo *auth.LoginInfo, in
 //
 // Returns:
 // - error: an error if there was a problem retrieving the power data.
-func (powerFlowData *Powerflow) GetPowerData(authLoginInfo *auth.LoginInfo) error {
+func (powerFlowData *Powerflow) GetPowerData(authLoginInfo *auth.LoginInfo) (string, error) {
 
 	// Get monitor data
 	if err := powerFlowData.GetMonitorData(authLoginInfo, powerFlowData); err != nil {
-		return err
+		return "", err
 	}
 
 	return apihelpers.ProcesData(powerFlowData)

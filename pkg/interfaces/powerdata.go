@@ -28,6 +28,6 @@ import (
 )
 
 type PowerData interface {
-	GetPowerData(*auth.LoginInfo) error
+	GetPowerData(*auth.LoginInfo) (string, error)
 	GetMonitorData(*auth.LoginInfo, interface{}) error
 }

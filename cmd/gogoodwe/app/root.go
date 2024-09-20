@@ -111,6 +111,7 @@ func Run(ctx context.Context, versionString string) error {
 
 		batteryText, _ := strings.CutSuffix(monitorData.Data.Powerflow.Battery, "(W)")
 		batteryFloat, err := strconv.ParseFloat(batteryText, 64)
+
 		if monitorData.Data.Powerflow.BatteryStatus == 1 {
 			responseData.BatteryState = "charging"
 			if nil == err {
@@ -121,6 +122,9 @@ func Run(ctx context.Context, versionString string) error {
 			if nil == err {
 				responseData.BatteryOutput = batteryFloat
 			}
+		}
+		if monitorData.Data.Powerflow.Soc == 100 {
+			responseData.BatteryState = "charged"
 		}
 
 		gridLoadText, _ := strings.CutSuffix(monitorData.Data.Powerflow.Grid, "(W)")
